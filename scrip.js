@@ -5,16 +5,18 @@ const code = document.getElementById('code');
 const totalItem = document.getElementById('totalItem');
 const presentItem = document.getElementById('presentItem');
 const storeLink = document.getElementById('storeLink');
-const reloadBtn = document.getElementById('reloadBtn');
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+const copy = document.getElementById('copy');
+const myTooltip = document.getElementById('myTooltip');
 
 let indexNumber = 0;
+let totalCoupon = 0;
 const fetchData = (index) => {
     fetch('https://arabcoupondaily-ext.onrender.com/coupons')
         .then(res => res.json())
         .then(data => {
-            if (index + 1 === data.length) {
-                indexNumber = -1;
-            }
+            totalCoupon = data.length;
             const coupon = data[index];
 
             name.innerText = coupon?.name;
@@ -29,7 +31,29 @@ const fetchData = (index) => {
 setTimeout(() => {
     fetchData(indexNumber);
 }, 1)
-reloadBtn.addEventListener('click', () => {
-    indexNumber += 1;
+// previous button event listener
+prevBtn.addEventListener('click', () => {
+    console.log(totalCoupon);
+    if (indexNumber === 0) {
+        indexNumber = totalCoupon - 1;
+    } else {
+        indexNumber -= 1;
+    }
     fetchData(indexNumber);
+})
+// next button event listener
+nextBtn.addEventListener('click', () => {
+    if (indexNumber + 1 === totalCoupon) {
+        indexNumber = 0;
+    } else {
+        indexNumber += 1;
+    }
+    fetchData(indexNumber);
+})
+// copy text
+copy.addEventListener('click', () => {
+    const selectedCode = code.innerText;
+    navigator.clipboard.writeText(selectedCode).then(() => {
+        myTooltip.innerText = `${selectedCode} is copied!`
+    })
 })
